@@ -1,0 +1,58 @@
+# Entorno local: tres contenedores (proxy, aplicación y base de datos).
+# Las credenciales se leen del archivo .env (no se sube a GitHub; ver .env.example).
+services:
+  proxy:
+    image: nginx:1.27.3-alpine
+    ports:
+      - "8080:80"                      # único puerto publicado en el equipo
+    volumes:
+      - ./proxy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      app:
+        condition: service_started
+    networks: [frontend]
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    image: ${DOCKERHUB_USER:-s82833}/usil-cloud-login:1.0.1
+    environment:
+      PGHOST: db
+      PGPORT: "5432"
+      PGDATABASE: ${POSTGRES_DB}
+      PGUSER: ${POSTGRES_USER}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      SESSION_SECRET: ${SESSION_SECRET}
+      PORT: "3000"
+    depends_on:
+      db:
+        condition: service_healthy     # espera a que PostgreSQL acepte conexiones
+    networks: [frontend, backend]      # sin "ports": no se expone al exterior
+    restart: unless-stopped
+
+  db:
+    image: postgres:17.2-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - datos_pg:/var/lib/postgresql/data          # persistencia
+      - ./db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks: [backend]                # solo la aplicación la ve; sin "ports"
+    restart: unless-stopped
+
+networks:
+  frontend:
+  backend:
+    internal: true                     # red sin salida a internet
+
+volumes:
+  datos_pg:

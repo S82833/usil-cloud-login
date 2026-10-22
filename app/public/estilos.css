@@ -1,0 +1,14 @@
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;font-family:"Segoe UI",Arial,sans-serif;background:#f3f6fb;color:#1d2a3a}
+.tarjeta{width:100%;max-width:400px;background:#fff;border-radius:16px;padding:32px;box-shadow:0 8px 24px #123b7022;border-top:6px solid #123b70}
+h1{margin:0 0 8px;font-size:24px;color:#123b70}
+.sub{margin:0 0 24px;color:#4a5a70;font-size:14px}
+form{display:flex;flex-direction:column;gap:16px}
+label{display:flex;flex-direction:column;gap:8px;font-weight:600;font-size:14px}
+input{height:48px;border:1px solid #b8c4d6;border-radius:10px;padding:0 16px;font-size:16px}
+input:focus{outline:3px solid #2496ed55;border-color:#2496ed}
+button{height:48px;border:0;border-radius:10px;background:#123b70;color:#fff;font-size:16px;font-weight:700;cursor:pointer}
+button:hover{background:#0d2c55}
+.secundario{background:#fff;color:#123b70;border:2px solid #123b70;margin-top:16px}
+.error{background:#fdecea;color:#8a1f11;border-radius:10px;padding:12px 16px;margin:0 0 16px}
+footer{font-size:12px;color:#4a5a70}
